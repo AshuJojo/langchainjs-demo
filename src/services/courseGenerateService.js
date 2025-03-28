@@ -83,16 +83,26 @@ const generatePromptTemplateResponse = async (product) => {
     // console.log("response", response);
 
     // Stream Response
-    let response = "";
+    // let response = "";
 
-    const stream = await chain.stream({
-        product,
-    })
+    // const stream = await chain.stream({
+    //     product,
+    // })
 
-    for await (const chunk of stream){
-        console.log('\n----Stream ----\n', chunk);
-        response += chunk;
-    }
+    // for await (const chunk of stream){
+    //     console.log('\n----Stream ----\n', chunk);
+    //     response += chunk;
+    // }
+
+    // Batch Reponse 
+    const inputs = [
+        {product},
+        {product}
+    ]
+
+    const response = await chain.batch(inputs);
+
+    console.log('response', response);
 
     // return response to user
     return response;
