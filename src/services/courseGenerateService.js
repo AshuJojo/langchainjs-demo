@@ -76,11 +76,23 @@ const generatePromptTemplateResponse = async (product) => {
     ])
 
     // get the reponse from chain with product 
-    const response = await chain.invoke({
-      product,
-    });
+    // const response = await chain.invoke({
+    //   product,
+    // });
 
-    console.log("response", response);
+    // console.log("response", response);
+
+    // Stream Response
+    let response = "";
+
+    const stream = await chain.stream({
+        product,
+    })
+
+    for await (const chunk of stream){
+        console.log('\n----Stream ----\n', chunk);
+        response += chunk;
+    }
 
     // return response to user
     return response;
