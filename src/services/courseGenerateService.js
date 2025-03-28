@@ -6,7 +6,11 @@ const {
   HumanMessagePromptTemplate,
 } = require("@langchain/core/prompts");
 const { RunnableSequence } = require("@langchain/core/runnables");
-const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
+const {
+  ChatGoogleGenerativeAI,
+  GoogleGenerativeAIEmbeddings,
+} = require("@langchain/google-genai");
+const { similarity } = require("ml-distance");
 const { z } = require("zod");
 
 const generateResponse = async (prompt) => {
@@ -69,18 +73,14 @@ const generatePromptTemplateResponse = async (product) => {
     // const chain = promptTemplate.pipe(model).pipe(outputParser);
 
     // create runnable sequence for prompt -> model -> outputParser
-    const chain = RunnableSequence.from([
-        promptTemplate,
-        model,
-        outputParser
-    ])
+    const chain = RunnableSequence.from([promptTemplate, model, outputParser]);
 
-    // get the reponse from chain with product 
-    // const response = await chain.invoke({
-    //   product,
-    // });
+    // get the reponse from chain with product
+    const response = await chain.invoke({
+      product,
+    });
 
-    // console.log("response", response);
+    console.log("response", response);
 
     // Stream Response
     // let response = "";
@@ -94,15 +94,15 @@ const generatePromptTemplateResponse = async (product) => {
     //     response += chunk;
     // }
 
-    // Batch Reponse 
-    const inputs = [
-        {product},
-        {product}
-    ]
+    // Batch Reponse
+    // const inputs = [
+    //     {product},
+    //     {product}
+    // ]
 
-    const response = await chain.batch(inputs);
+    // const response = await chain.batch(inputs);
 
-    console.log('response', response);
+    // console.log('response', response);
 
     // return response to user
     return response;
@@ -112,4 +112,25 @@ const generatePromptTemplateResponse = async (product) => {
   }
 };
 
-module.exports = { generateResponse, generatePromptTemplateResponse };
+const generateSimilarityScore = async (text1, text2) => {
+  const embeddings = new GoogleGenerativeAIEmbeddings();
+
+  const vector1 = await embeddings.embedQuery(text1);
+
+  const vector2 = await embeddings.embedQuery(text2);
+
+  console.log("vector1", vector1);
+  console.log("vector2", vector2);
+
+  const result = similarity.cosine(vector1, vector2);
+
+  console.log("Similiarty Score", result);
+
+  return `${result}`;
+};
+
+module.exports = {
+  generateResponse,
+  generatePromptTemplateResponse,
+  generateSimilarityScore,
+};

@@ -1,4 +1,4 @@
-const { generateResponse, generatePromptTemplateResponse } = require("../services/courseGenerateService");
+const { generateResponse, generatePromptTemplateResponse, generateSimilarityScore } = require("../services/courseGenerateService");
 
 const getResponse = async (req, res) => {
   const { prompt } = req.body;
@@ -16,4 +16,15 @@ const getPromptTemplateResponse = async(req, res) =>{
     res.send(result);
 }
 
-module.exports = {getResponse, getPromptTemplateResponse}
+const getSimilarityStore = async(req, res) => {
+    const {text1, text2} = req.body;
+
+    if(!text1 || !text2)
+        res.send("Please provide text1 & text2");
+
+    const result = await generateSimilarityScore(text1, text2);
+
+    res.send(result);
+}
+
+module.exports = {getResponse, getPromptTemplateResponse, getSimilarityStore}
