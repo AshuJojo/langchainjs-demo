@@ -5,6 +5,7 @@ const {
   SystemMessagePromptTemplate,
   HumanMessagePromptTemplate,
 } = require("@langchain/core/prompts");
+const { RunnableSequence } = require("@langchain/core/runnables");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 const { z } = require("zod");
 
@@ -65,7 +66,14 @@ const generatePromptTemplateResponse = async (product) => {
     const outputParser = new StringOutputParser();
 
     // create chain with prompt template -> model -> output parser
-    const chain = promptTemplate.pipe(model).pipe(outputParser);
+    // const chain = promptTemplate.pipe(model).pipe(outputParser);
+
+    // create runnable sequence for prompt -> model -> outputParser
+    const chain = RunnableSequence.from([
+        promptTemplate,
+        model,
+        outputParser
+    ])
 
     // get the reponse from chain with product 
     const response = await chain.invoke({
