@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const generateRoutes = require("./routes/generateRoutes"); // Import all routes
+const courseRoutes = require("./routes/courseRoutes"); // Import all routes
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.get("/", (req, res) => {
 // Routes
 // app.use("/api", routes); // Mount API routes
 app.use("/generate", generateRoutes); 
+app.use('/course', courseRoutes);
 
 module.exports = app; // Export app for testing and use in server.js
